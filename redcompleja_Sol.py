@@ -41,21 +41,21 @@ def FindInfected(g):
     NoInfectadosCT = 0         ########         NTI=numero total de infectados
     NoSusceptibles = 0
     for i in range(N):
-        if (g.node[i]["V"]) > 0.0:
-            g.node[i]['Ro'] = Ro(u1[i],u2[i],beta[i],Neta[i],sigma[i])
-            if g.node[i]["Estado"] == 'Ct':
+        if (g.nodes[i]["V"]) > 0.0:
+            g.nodes[i]['Ro'] = Ro(u1[i],u2[i],beta[i],Neta[i],sigma[i])
+            if g.nodes[i]["Estado"] == 'Ct':
                 NoInfectadosCT=NoInfectadosCT+1
                 PAT=uniform(0,1) #probabilidad de abandonar tto
                 if PAT<0.2:
-                    g.node[i]["Estado"] = 'St'
+                    g.nodes[i]["Estado"] = 'St'
                     u1[i]=0
                     u2[i]=0
                     NoInfectadosST = NoInfectadosST+1
                     NoInfectadosCT = NoInfectadosCT-1
             else:
                 NoInfectadosST = NoInfectadosST+1
-                if g.node[i]["T"]<350: #probabilidad de inciar tto
-                    g.node[i]["Estado"] = 'Ct'
+                if g.nodes[i]["T"]<350: #probabilidad de inciar tto
+                    g.nodes[i]["Estado"] = 'Ct'
                     u1[i]=uniform(0,1)
                     u2[i]=uniform(0,1)
                     NoInfectadosCT = NoInfectadosCT+1
@@ -74,7 +74,7 @@ def Grafique_Red(g, i):
     #new_labels = dict(map(lambda x:((x[0],x[1]), str( math.ceil(x[2]['weight']) if x[2]['weight']>0 else "") ), g.edges(data = True)))
     #nx.draw_networkx_edge_labels(g, position, edge_labels = new_labels)
     nx.draw_networkx_edges(g,position,width=Arista, edge_color='gray', arrows=False)
-    nx.draw_networkx(g,position, with_labels = etiquetas,node_size=size,edge_color='dimgray', node_color=[color_map[g.node[node]['Estado']] for node in g],font_color='k',alpha=1,linewidths=2,font_size=20)
+    nx.draw_networkx(g,position, with_labels = etiquetas,node_size=size,edge_color='dimgray', node_color=[color_map[g.nodes[node]['Estado']] for node in g],font_color='k',alpha=1,linewidths=2,font_size=20)
     plt.tight_layout()
     plt.axis('off')
     if i == -1:
@@ -94,12 +94,12 @@ def update_EIall(i,tt,TT,Tss,MM,Mss,VV,WW):
     #print()
     print ('ITERACION', i, 'con t in (',ti,',',tf,')')
     for j in range(N):
-        T0=g.node[j]["T"]
-        Ts0=g.node[j]["Ts"]
-        M0=g.node[j]["M"]
-        Ms0=g.node[j]["Ms"]
-        V0=g.node[j]["V"]
-        W0=g.node[j]["W"]
+        T0=g.nodes[j]["T"]
+        Ts0=g.nodes[j]["Ts"]
+        M0=g.nodes[j]["M"]
+        Ms0=g.nodes[j]["Ms"]
+        V0=g.nodes[j]["V"]
+        W0=g.nodes[j]["W"]
         t = np.linspace(ti,tf,n+1)
         h=(tf-ti)/n
         t, T, Ts, M, Ms, V, W, R0 = EDO(T0,Ts0,M0,Ms0,V0,W0,t,h,u1[j],u2[j],beta[j],Neta[j],sigma[j])
@@ -115,13 +115,13 @@ def update_EIall(i,tt,TT,Tss,MM,Mss,VV,WW):
             WW[j][pos] = W[l]
             
         longEstados = len(t)
-        g.node[j]["T"] = T[longEstados-1]
-        g.node[j]["Ts"] = Ts[longEstados-1]
-        g.node[j]["M"] = M[longEstados-1]
-        g.node[j]["Ms"] = Ms[longEstados-1]
-        g.node[j]["V"] = V[longEstados-1] 
-        g.node[j]["W"] = W[longEstados-1]
-        g.node[j]["Ro"] = R0    
+        g.nodes[j]["T"] = T[longEstados-1]
+        g.nodes[j]["Ts"] = Ts[longEstados-1]
+        g.nodes[j]["M"] = M[longEstados-1]
+        g.nodes[j]["Ms"] = Ms[longEstados-1]
+        g.nodes[j]["V"] = V[longEstados-1] 
+        g.nodes[j]["W"] = W[longEstados-1]
+        g.nodes[j]["Ro"] = R0    
         T0=T[longEstados-1]
         Ts0=Ts[longEstados-1]
         M0=M[longEstados-1]
@@ -170,11 +170,11 @@ def Plot_ODE(tiempo,X1,X2,X3,X4,X5,X6):
     for i in range(N):
         col='k'                 
         f=plt.figure(num=i, figsize=(8, 6),dpi = 72)
-        if g.node[i]["Estado"]=='St':
-            plt.suptitle(r'Persona %s: infectada sin tratamiento con $R_0=%.2f$'%(i, g.node[i]["Ro"]), y=0.04, fontsize=16)
+        if g.nodes[i]["Estado"]=='St':
+            plt.suptitle(r'Persona %s: infectada sin tratamiento con $R_0=%.2f$'%(i, g.nodes[i]["Ro"]), y=0.04, fontsize=16)
             col='r' 
-        elif g.node[i]["Estado"]=='Ct':
-            plt.suptitle(r'Persona %s: infectada con tratamiento con $R_0=%.2f$'%(i, g.node[i]["Ro"]), y=0.04, fontsize=16) 
+        elif g.nodes[i]["Estado"]=='Ct':
+            plt.suptitle(r'Persona %s: infectada con tratamiento con $R_0=%.2f$'%(i, g.nodes[i]["Ro"]), y=0.04, fontsize=16) 
             col='g' 
         else:
             plt.suptitle(r'Persona %s: susceptible' %(i), y=0.04, fontsize=16)
@@ -209,11 +209,11 @@ def Plot_ODE(tiempo,X1,X2,X3,X4,X5,X6):
 #######################  ENCUENTRA POSIBLES PAREJAS PARA EL INFECTADO j Y CONSTRUYE UN VECTOR DE RIESGOS L     
 def FindTarget():
     for j in range(N):    
-        if (g.node[j]["V"]>0.0):
-            #g.node[j]["Estado"]='I'
-            if (g.node[j]["V"]<50):                 #carga viral baja VALORES TOMADO DE ARIEL Y LASRY 2014
+        if (g.nodes[j]["V"]>0.0):
+            #g.nodes[j]["Estado"]='I'
+            if (g.nodes[j]["V"]<50):                 #carga viral baja VALORES TOMADO DE ARIEL Y LASRY 2014
                Lambda=uniform(0.0006,0.0011)
-            elif (g.node[j]["V"]<10000):             #carga viral media
+            elif (g.nodes[j]["V"]<10000):             #carga viral media
                Lambda=uniform(0.0007,0.0168)
             else: 
                Lambda=uniform(0.002,0.025)        #carga viral alta
@@ -221,7 +221,7 @@ def FindTarget():
             L=[]
             for l in range(N):
                 if g.has_edge(j,l):
-                    if (g.node[l]["Estado"]=='S'):
+                    if (g.nodes[l]["Estado"]=='S'):
                         g[j][l]['weight']=Lambda
                         target=target+[l]
                         L=L+[(l+1)*(j+1)*Lambda/avg_deg] 
@@ -239,10 +239,10 @@ def Emparejar(j,target,L,Lambda):
             Pinfectarse=uniform(0,1)#probabilidad de infectarse, S se infecta solo si este valor es mayor que el L
             #print(L,g[j][pareja]['weight'])
             #print('El nodo ',j,' se une con el nodo ',pareja)                    
-            if Pinfectarse>L[p]:#prom(L): #and g.node[pareja]["T"]<400:
-                g.node[pareja]["V"]=(g.node[j]["V"])*0.01
-                g.node[pareja]["Estado"]='St'
-                #print ('El nodo ',pareja,' SI se ha infectado: Ro=', g.node[pareja]["Ro"], ' y V=', g.node[pareja]["V"],' y Lambda=',g[j][pareja]['weight'])
+            if Pinfectarse>L[p]:#prom(L): #and g.nodes[pareja]["T"]<400:
+                g.nodes[pareja]["V"]=(g.nodes[j]["V"])*0.01
+                g.nodes[pareja]["Estado"]='St'
+                #print ('El nodo ',pareja,' SI se ha infectado: Ro=', g.nodes[pareja]["Ro"], ' y V=', g.nodes[pareja]["V"],' y Lambda=',g[j][pareja]['weight'])
             #else:
                 #print ('El nodo ',pareja,' NO se ha infectado') 
         #else:
@@ -381,19 +381,19 @@ color_map = {'St':'red', 'Ct':'yellowgreen', 'S':'cornflowerblue'}
 
 ########################################## DEFINICION E INICIALIZACION DE ATRIBUTOS DELA RED
 for i in range(g.number_of_nodes()):
-    g.node[i]['T'] = T0[i]
-    g.node[i]['Ts'] = Ts0[i]
-    g.node[i]['M'] = M0[i]
-    g.node[i]['Ms'] = Ms0[i]
-    g.node[i]['V'] = V0[i]
-    g.node[i]['W'] = W0[i]
-    g.node[i]['Ro'] = R0[i]
-    g.node[i]['Estado']='S'
-g.node[InInicial]["Estado"]='St'
+    g.nodes[i]['T'] = T0[i]
+    g.nodes[i]['Ts'] = Ts0[i]
+    g.nodes[i]['M'] = M0[i]
+    g.nodes[i]['Ms'] = Ms0[i]
+    g.nodes[i]['V'] = V0[i]
+    g.nodes[i]['W'] = W0[i]
+    g.nodes[i]['Ro'] = R0[i]
+    g.nodes[i]['Estado']='S'
+g.nodes[InInicial]["Estado"]='St'
 
 
 #for i in range(g.number_of_nodes()):     ########## ACTIVAR PARA IMPRIMIR TODOS LOS NODOS DE LA RED
-#        print (i,g.node[i]) 
+#        print (i,g.nodes[i]) 
 for i, j in g.edges():
     g[i][j]['weight']=0
   

@@ -4,7 +4,7 @@ import random as ran
 
 #---------------------------------------------------------------------------
  
-N=50
+N=500
 def  cambiarcolor(G):  #program no hace nada como 
     NaC=ran.randint(0,N)
     G.node[NaC]['Estado']='I'
@@ -14,7 +14,7 @@ def  cambiarcolor(G):  #program no hace nada como
 
 G = nx.scale_free_graph(N)
 for i in range(N):
-    G.node[i]['Estado']='S'
+    G.nodes[i]['Estado']='S'
 
 color_map={'S': 'green', 'I': 'red'}
     
